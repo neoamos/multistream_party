@@ -1,10 +1,23 @@
-# Getting Started with Create React App
+# MultiStream 🎉
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+MultiStream 🎉 is a web app for watching multiple Twitch, YouTube and Kick streams at the same time.  It allows you to tile streams efficiently, and switch quickly between different layouts.  You can easily can easily reorder the streams by dragging the tab associated with the stream.  You can also click on the tab to push the stream to the top of the list.
+
+This project is open source, and contributions are welcomed.
+
+The following services are supported:
+* Twitch
+* Youtube
+* Kick
+
+Feature wishlist:
+* More layout options
+* Chat integration
+* Smart muting/unmuting (possible with Twich and YouTube but maybe no with Kick)
+* Synchronizing VODs (probably not possible)
 
 ## Available Scripts
 
-In the project directory, you can run:
+This project is developed as a single page React app.  In the project directory, you can run:
 
 ### `npm start`
 
