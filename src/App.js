@@ -134,15 +134,17 @@ function App() {
           <div className="logo">
             MultiStream 🎉
           </div>
-          <StreamAdder addStream={addStream} />
-          <Menu
-            menu={menu}
-            setIsOpen={setMenuOpen}
-            open={menuOpen}>
-              <div style={{margin: "0 10px"}}>
-                <GridIcon showcase={layout==="showcase"} onClick={() => setMenuOpen(!menuOpen)} />
-              </div>
-          </Menu>
+          <div class="controls-container">
+            <StreamAdder addStream={addStream} />
+            <Menu
+              menu={menu}
+              setIsOpen={setMenuOpen}
+              open={menuOpen}>
+                <div style={{margin: "0 10px"}}>
+                  <GridIcon showcase={layout==="showcase"} onClick={() => setMenuOpen(!menuOpen)} />
+                </div>
+            </Menu>
+          </div>
         </div>
         <StreamList streams={streams} 
           setStreams={setStreams} 
