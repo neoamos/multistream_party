@@ -44,9 +44,11 @@
         background-color: #2563eb;
         color: white;
         border-right: 1px solid black;
+        opacity: 1;
         
         &::placeholder{
             color: white;
+            opacity: 1;
         }
     }
 
@@ -95,10 +97,10 @@
     display: flex;
     align-items: center;
     gap: 5px;
-    margin: 0 10px;
+    margin: 0 10px 0 0;
     overflow-x: auto;
     scrollbar-width: none;
-    padding: 5px 0;
+    padding: 0;
     flex: 1;
     max-width: 100%;
 
@@ -178,4 +180,44 @@
 .plus{
     width: 20px;
     height: 20px;
+}
+
+.grid-icon{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    justify-items: center;
+    align-items: center;
+    width: 25px;
+    height: 25px;
+    padding: 5px;
+    background-color: rgb(36 44 98);
+    border-radius: 7px;
+    cursor: pointer;
+
+    & div{
+        background-color: rgb(68 202 255);
+        width: 10px;
+        height: 10px
+    }
+
+    &.showcase{
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: 1fr 1fr; 
+        & .first{
+            grid-column: 1 / -1;
+            width: 23px;
+            height: 10px;
+        }
+
+        & div{
+            width: 7px;
+            height: 7px
+        }
+    }
+}
+
+.menu-list{
+    display: flex;
+    gap: 5px;
 }

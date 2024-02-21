@@ -4,40 +4,27 @@ import Services from "./services"
 
 import { XMarkIcon, PlusIcon } from '@heroicons/react/24/solid'
 
-
+import { Tooltip } from 'react-tippy';
 
 let services = new Services()
 let idCounter = 4
 
 function App() {
 
-  const [streams, setStreams] = useState([
-    {
-      id: 1,
-      service: "Twitch",
-      username: "Esfandtv",
-      position: 0
-    },
-    {
-      id: 2,
-      service: "Kick",
-      username: "Grym",
-      position: 2
-    },
-    {
-      id: 3,
-      service: "YouTube",
-      url: "https://www.youtube.com/watch?v=qcyXu1f_0vE",
-      position: 3
-    }
-  ]);
+  let [restoredLayout, restoredStreams] = restoreState()
+  for(let i in restoredStreams){
+    restoredStreams[i] = generateStreamObject(restoredStreams[i], parseInt(i))
+  }
 
-  const [layout, setLayout] = useState("showcase")
+  const [streams, setStreams] = useState(restoredStreams);
+
+  const [layout, setLayout] = useState(restoredLayout)
   const [gridStyle, setGridStyle] = useState()
   const gridRef = useRef()
 
   const updateLayout = () => {
-    if(layout == "grid"){
+    saveState(layout, streams)
+    if(layout === "grid"){
       let [rows, cols] = calculateRowsAndColsBruteForce(streams.length, gridRef.current.offsetHeight, gridRef.current.offsetWidth)
       // console.log("N: " + streams.length + ", W: " +gridRef.current.offsetWidth + ", H: " + gridRef.current.offsetHeight + ", Rows: " + rows + ", Cols: " + cols)
       let style = {
@@ -45,10 +32,10 @@ function App() {
         gridTemplateColumns: "repeat(" + cols + ", 1fr)",
       }
       setGridStyle(style)
-    }else if(layout == "showcase"){
+    }else if(layout === "showcase"){
       let showcasePercent = 1- (((gridRef.current.offsetWidth / (streams.length-1)) * (9/16)) / gridRef.current.offsetHeight)
-      showcasePercent = 0.5
-      showcasePercent = Math.max(0.75, showcasePercent)
+      showcasePercent = Math.max(0.7, showcasePercent)
+      showcasePercent = Math.min((gridRef.current.offsetWidth*(9/16))/gridRef.current.offsetHeight, 0.7)
       let [rows, cols] = calculateRowsAndColsBruteForce(streams.length-1, (1-showcasePercent) * gridRef.current.offsetHeight, gridRef.current.offsetWidth)
       let style = {
         gridTemplateRows: Math.trunc(showcasePercent*100) + "% repeat(" + rows + ", 1fr)",
@@ -91,12 +78,11 @@ function App() {
       if(service && service.supports.url){
         let id = idCounter
         idCounter = idCounter + 1
-        let newStream = {
-          id: id,
-          service: service.name,
-          url: url.href,
-          position: streams.length
-        }
+        let newStream = generateStreamObject({
+            id: id,
+            service: service.name,
+            url: url.href
+          }, streams.length)
         pushStream(newStream)
       }
     }catch(e){ 
@@ -104,12 +90,11 @@ function App() {
       if(service && service.supports.username){
         let id = idCounter
         idCounter = idCounter + 1
-        let newStream = {
-          id: id,
-          service: service.name,
-          username: text,
-          position: streams.length
-        }
+        let newStream = generateStreamObject({
+            id: id,
+            service: service.name,
+            username: text,
+          }, streams.length)
         pushStream(newStream)
       }
     }
@@ -126,12 +111,19 @@ function App() {
   let streamComponents = [...streams].sort((x, y) => x.id-y.id).map(function(s, i){
     let service = services.getServiceFromName(s.service)
     let style = {order: s.position}
-    if(layout === "showcase" && s.id == streams[0].id){
+    if(layout === "showcase" && s.id === streams[0].id){
       style.gridColumn = "1 / -1"
     }
     return <service.StreamComponent stream={s} i={i} key={s.id} style={style} />
   })
 
+  const [menuOpen, setMenuOpen] = useState(false)
+  let menu = (
+    <div className="menu-list">
+      <GridIcon onClick={() => {setMenuOpen(false); setLayout("grid")}} />
+      <GridIcon onClick={() => {setMenuOpen(false); setLayout("showcase")}}  showcase={true} />
+    </div>
+  )
   return (
     <div className="App">
       <div className="stream-container" style={gridStyle} ref={gridRef}>
@@ -143,6 +135,14 @@ function App() {
             MultiStream 🎉
           </div>
           <StreamAdder addStream={addStream} />
+          <Menu
+            menu={menu}
+            setIsOpen={setMenuOpen}
+            open={menuOpen}>
+              <div style={{margin: "0 10px"}}>
+                <GridIcon showcase={layout==="showcase"} onClick={() => setMenuOpen(!menuOpen)} />
+              </div>
+          </Menu>
         </div>
         <StreamList streams={streams} 
           setStreams={setStreams} 
@@ -150,6 +150,21 @@ function App() {
       </div>
     </div>
   );
+}
+
+function GridIcon(props){
+  let classes = "grid-icon"
+  if(props.showcase){
+    classes += " showcase"
+  }
+  return (
+    <div className={classes} ref={props.ref} onClick={props.onClick}>
+      <div className="first"></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  )
 }
 
 function StreamList(props){
@@ -276,6 +291,7 @@ function StreamAdder(props){
   )
 }
 
+
 // Doesnt work right???
 // Based on https://math.stackexchange.com/questions/466198/algorithm-to-get-the-maximum-size-of-n-squares-that-fit-into-a-rectangle-with-a/466248#466248
 function calculateRowsAndCols(streamCount, viewHeight, viewWidth){
@@ -332,6 +348,54 @@ function calculateRowsAndColsBruteForce(streamCount, viewHeight, viewWidth){
     }
   }
   return [maxR, maxC]
+}
+
+function saveState(layout, streams){
+  window.localStorage["layout"] = layout
+  let streamSave = streams.sort((x, y) => x.position-y.position).map((s) => {
+    return {
+      service: s.service,
+      url: s.url,
+      username: s.username
+    }
+  })
+  window.localStorage["streams"] = JSON.stringify(streamSave)
+}
+
+function restoreState(){
+  let layout = window.localStorage["layout"] || "grid"
+  let streams = []
+  if(window.localStorage["streams"]){
+    streams = JSON.parse(window.localStorage["streams"])
+  }
+  return [layout, streams]
+}
+
+function generateStreamObject(stream, position){
+  let streamObject =  {
+    id: idCounter,
+    position: position,
+    service: stream.service,
+    url: stream.url,
+    username: stream.username || services.getServiceFromName(stream.service).usernameFromUrl(stream.url)
+  }
+  idCounter = idCounter + 1
+  return streamObject
+}
+
+export function Menu(props){
+  return (
+    <Tooltip
+      html={props.menu}
+      open={props.open}
+      onRequestClose={() => {props.setIsOpen(false)}}
+      position={props.position || "top"}
+      interactive={true}
+      theme="dark"
+    >
+      {props.children}
+    </Tooltip>
+  )
 }
 
 export default App;

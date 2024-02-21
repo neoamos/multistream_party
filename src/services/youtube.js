@@ -17,12 +17,17 @@ function YoutubeStream(props){
   )
 }
 
+function usernameFromUrl(url){
+  return "YouTube"
+}
+
 let YoutubeService = {
   StreamComponent: YoutubeStream,
   logo: youtubeLogo,
   domain: "www.youtube.com",
   name: "YouTube",
-  supports: {url: true}
+  supports: {url: true},
+  usernameFromUrl: usernameFromUrl
 }
 
   export default YoutubeService
