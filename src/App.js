@@ -2,7 +2,7 @@ import './App.scss';
 import { useState, useRef, useEffect} from 'react';
 import Services from "./services"
 
-import { XMarkIcon, PlusIcon } from '@heroicons/react/24/solid'
+import { XMarkIcon, PlusIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/solid'
 
 import { Tooltip } from 'react-tippy';
 
@@ -268,22 +268,39 @@ function StreamAdder(props){
     return <option value={s.name}>{s.name}</option>
   })
 
-
+  const [menuOpen, setMenuOpen] = useState(false)
+  let menu_items = services.services.map(function(s){
+    return <img src={services.getLogo(s.name)} 
+      style={{cursor: "pointer", padding: "3px"}}
+      title={s.name}
+      alt={s.name}
+      onClick={() => {
+      setMenuOpen(false)
+      setService(s.name)
+    }} />
+  })
 
   return (
     <div className="add-stream">
+      <div id="stream-input" >
       <input 
-        id="stream-input" 
-        type="text"
-        placeholder="Username or Link..."
-        value={text}
-        onChange={handleTextChange}
-        onKeyPress={handleKeyPress}
-        ></input>
-      <select id="service-selector" onChange={handleServiceChange} 
-        value={service}>
-        {serviceOptions}
-      </select>
+          type="text"
+          placeholder="Username or Link..."
+          value={text}
+          onChange={handleTextChange}
+          onKeyPress={handleKeyPress}
+          ></input>
+      </div>
+      <Menu
+        menu={<div className="menu-list">{menu_items}</div>}
+        setIsOpen={setMenuOpen}
+        open={menuOpen}>
+          <div className="add-stream-service-selector" onClick={() => setMenuOpen(!menuOpen)}>
+            <img src={services.getLogo(service)} title={service} />
+
+            {menuOpen ? <ChevronUpIcon className="icon"/> : <ChevronDownIcon  className="icon"/>}
+          </div>
+      </Menu>
       <div className="button" onClick={handleSubmit}>
         <PlusIcon className="plus"/>
       </div>

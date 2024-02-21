@@ -35,42 +35,62 @@
         background-image:url(./logos/kick.png);
     }
 
-    & input{
-        height: 20px;
-        width: 115px;
-        padding: 5px 10px;
+    & #stream-input{
+        height: 25px;
+        width: 130px;
+        padding: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         border-radius: 10px 0 0 10px;
-        border: none;
         background-color: #2563eb;
         color: white;
         border-right: 1px solid black;
         opacity: 1;
         
+    }
+    & input{
+        background-color: #1e53c5;
+        border: none;
+        border-radius: 10px;
+        padding: 7px;
+        width: 100%;
+        color: #FFF;
         &::placeholder{
             color: white;
             opacity: 1;
         }
     }
 
-    & select{
-        height: 30px;
+    &-service-selector{
+        height: 35px;
         border: none;
-        width: 70px;
+        width: 50px;
         background-color: #2563eb;
         color: white;
         border-right: 1px solid black;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
 
-        & option{
-            appearance: none;
-            padding: 5px;
+        & img{
+            width: 24px;
+            height: 24px;
+        }
+
+        & .icon{
+            width: 16px;
+            height: 16px;
+            margin-left: 2px;
         }
     }
     
     & .button{
-        height: 30px;
+        height: 35px;
         border-radius: 0 10px 10px 0;
         border: none;
-        width: 35px;
+        width: 50px;
         font-weight: bold;
         background-color: #28a745;
         color: #FFF;
@@ -108,7 +128,7 @@
         display: flex;
         align-items: center;
         background-color: #262626;
-        height: 30px;
+        height: 35px;
         padding: 0 10px;
         border-radius: 10px;
         cursor: pointer;
