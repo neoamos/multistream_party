@@ -23,6 +23,7 @@ function App() {
   const gridRef = useRef()
 
   const updateLayout = () => {
+    if(streams.length == 0) return
     saveState(layout, streams)
     if(layout === "grid"){
       let [rows, cols] = calculateRowsAndColsBruteForce(streams.length, gridRef.current.offsetHeight, gridRef.current.offsetWidth)
@@ -116,6 +117,11 @@ function App() {
     }
     return <service.StreamComponent stream={s} i={i} key={s.id} style={style} />
   })
+  streamComponents = (
+    <div className="stream-container" style={gridStyle} ref={gridRef}>
+      {streamComponents}
+    </div>
+  )
 
   const [menuOpen, setMenuOpen] = useState(false)
   let menu = (
@@ -124,11 +130,20 @@ function App() {
       <GridIcon onClick={() => {setMenuOpen(false); setLayout("showcase")}}  showcase={true} />
     </div>
   )
+
+  let greeting = (
+    <div className="greeting">
+      <div className="greeting-main">
+        Add a Twitch, YouTube or Kick stream to start watching!
+      </div>
+      <div className="greeting-sub">
+        The source code for this project is available on <a href="https://github.com/neoamos/multistream_party" target="_blank">GitHub</a>
+      </div>
+    </div>
+  )
   return (
     <div className="App">
-      <div className="stream-container" style={gridStyle} ref={gridRef}>
-        {streamComponents}
-      </div>
+      {streams.length > 0 ? streamComponents : greeting}
       <div className="controls">
         <div className="controls-left">
           <div className="logo">
@@ -227,6 +242,7 @@ function StreamList(props){
       {streams.map((stream, index) => {
         return (
           <div className="stream-list-item" 
+            title="Drag or Click to reorder."
             draggable="true"
             onDragStart={(e) => handleDragStart(index, e)}
             onDragEnter={(e) => handleDragEnter(index, e)}
